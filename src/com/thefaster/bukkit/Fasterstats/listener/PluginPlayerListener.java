@@ -1,12 +1,15 @@
-package com.thefaster.bukkit.Fasterstats.controller;
+package com.thefaster.bukkit.Fasterstats.listener;
 
 
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerListener;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import com.thefaster.bukkit.Fasterstats.Fasterstats;
+import com.thefaster.bukkit.Fasterstats.controller.PlayerController;
 
 public class PluginPlayerListener extends PlayerListener {
 	
@@ -20,14 +23,24 @@ public class PluginPlayerListener extends PlayerListener {
     	Player player = event.getPlayer();    	
     	System.out.println("[Fasterstats] player " + player.getName() + " has joined.");
     	
-    	PlayerLogger logger = core.getOnlinePlayer(player);
-    	logger.playerJoin();
+    	PlayerController controller = core.getOnlinePlayer(player);
+    	controller.playerJoin();
     }
     
     public void onPlayerQuit(PlayerQuitEvent event) {
     	Player player = event.getPlayer();
     	
-    	PlayerLogger logger = core.getOnlinePlayer(player);
-    	logger.playerQuit();
+    	PlayerController controller = core.getOnlinePlayer(player);
+    	controller.playerQuit();
     }
+    
+    public void onPlayerMove(PlayerMoveEvent event) {
+    	Player player = event.getPlayer();
+    	Location from = event.getFrom();
+    	Location to = event.getTo();
+    	
+    	PlayerController controller = core.getOnlinePlayer(player);
+    	controller.moveRange(from.distance(to));    	    	    	
+    }
+        
 }

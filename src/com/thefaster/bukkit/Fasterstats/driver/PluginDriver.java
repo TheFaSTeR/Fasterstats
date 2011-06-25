@@ -2,16 +2,15 @@ package com.thefaster.bukkit.Fasterstats.driver;
 
 import org.bukkit.entity.Player;
 
-import com.thefaster.bukkit.Fasterstats.model.PlayerState;
+import com.thefaster.bukkit.Fasterstats.model.PlayerStateModel;
 
 public interface PluginDriver {
 	
-	void save();
-	void connection();
+	void save(PlayerStateModel ps);
 	void init() throws Exception;	
 	
-	PlayerState getPlayerStateFromDatabase(Player player);
+	PlayerStateModel getPlayerStateFromDatabase(Player player);
 	void setPlayerOnline(Player player);
-	void setPlayerOffline(Player player);
+	void setPlayerOffline(Player player);	
 	
 }

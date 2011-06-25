@@ -1,4 +1,4 @@
-package com.thefaster.bukkit.Fasterstats.controller;
+package com.thefaster.bukkit.Fasterstats.listener;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -8,6 +8,7 @@ import org.bukkit.event.block.BlockListener;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 import com.thefaster.bukkit.Fasterstats.Fasterstats;
+import com.thefaster.bukkit.Fasterstats.controller.PlayerController;
 
 public class PluginBlockListener extends BlockListener {
 	
@@ -24,8 +25,8 @@ public class PluginBlockListener extends BlockListener {
             Block block = event.getBlock();
             Material mat = block.getType();            
             
-            PlayerLogger logger = plugin.getOnlinePlayer(player);
-            logger.placeBlock(mat);
+            PlayerController controller = plugin.getOnlinePlayer(player);
+            controller.placeBlock(mat);
 
     }
     
@@ -34,7 +35,7 @@ public class PluginBlockListener extends BlockListener {
     	Block block = event.getBlock();
     	Material mat = block.getType();    	    	
     	
-    	PlayerLogger logger = plugin.getOnlinePlayer(player);
-    	logger.breakBlock(mat);
+    	PlayerController controller = plugin.getOnlinePlayer(player);
+    	controller.breakBlock(mat);
     }
 }

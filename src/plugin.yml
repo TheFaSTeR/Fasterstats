@@ -1,3 +1,11 @@
 name: Fasterstats
 main: com.thefaster.bukkit.Fasterstats.Fasterstats
 version: 0.0.0
+
+commands:
+  fasterstats:
+    aliases: [fasterstats, fs]
+    description: Provides access to Fasterstats commands and information.
+    usage: |
+           /<command>
+           Example: /<command> | Displays Player statistic           

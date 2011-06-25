@@ -12,7 +12,7 @@ public class PlayerModel {
 		this.driver = driverInstance;
 	}
 	
-	public PlayerState getPlayerStateFromDatabase(Player player) {
+	public PlayerStateModel getPlayerStateFromDatabase(Player player) {
 		return driver.getPlayerStateFromDatabase(player);
 	}
 	
@@ -22,6 +22,10 @@ public class PlayerModel {
 	
 	public void setPlayerOffline(Player player) {
 		driver.setPlayerOffline(player);
+	}
+	
+	public void Save(PlayerStateModel ps) {
+		driver.save(ps);
 	}
 
 }
