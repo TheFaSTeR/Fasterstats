@@ -10,3 +10,8 @@ commands:
            /<command>
            Example: /<command> | Displays Player statistic
            Example: /<command> time | Displays time played           
+           Example: /<command> blocks | Displays blocks information
+           Example: /<command> kills | Displays kills information
+           Example: /<command> player <player name> | Displays other player info
+           Example: /<command> player <player name> blocks | Displays other player blocks info
+           Example: /<command> player <player name> kills | Displays other player kills info
