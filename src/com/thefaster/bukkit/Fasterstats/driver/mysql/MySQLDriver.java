@@ -14,14 +14,14 @@ import java.util.Iterator;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
+import com.thefaster.bukkit.Fasterstats.Fasterstats;
 import com.thefaster.bukkit.Fasterstats.driver.PluginDriver;
 import com.thefaster.bukkit.Fasterstats.model.PlayerStateModel;
-
-import config.Config;
 
 public class MySQLDriver implements PluginDriver {
 	
 	private Connection connect = null;
+	private Fasterstats core = null;
 	
 	static final ClassLoader loader = MySQLDriver.class.getClassLoader();
 
@@ -112,16 +112,17 @@ public class MySQLDriver implements PluginDriver {
 	}
 
 	@Override
-	public void init() throws Exception { 
+	public void init(Fasterstats instance) throws Exception {
+		this.core = instance;
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			
 			connect = DriverManager.getConnection(String.format(
-					"jdbc:mysql://%s/%s?" + "user=%s&password=%s", 
-					Config.getDbHost(),
-					Config.getDbName(),
-					Config.getDbUser(),
-					Config.getDbPassword()
+					"jdbc:mysql://%s/%s?" + "user=%s&password=%s",
+					this.core.config.getDriverHost(),
+					this.core.config.getDriverDatabaseName(),
+					this.core.config.getDriverUser(),
+					this.core.config.getDriverPassword()					
 					));
 		
 			if (!this.isDatabaseExist()) {
@@ -140,7 +141,7 @@ public class MySQLDriver implements PluginDriver {
 		
 		ResultSet resultSet = statement.executeQuery("SHOW DATABASES");
 		while (resultSet.next()) {
-			if (resultSet.getString("Database").equals(Config.getDbName())) {
+			if (resultSet.getString("Database").equals(this.core.config.getDriverDatabaseName())) {
 				founded = true;
 				System.out.println("[Fasterstats] Database founded!");
 				break;

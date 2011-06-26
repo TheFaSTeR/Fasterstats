@@ -13,6 +13,7 @@ import org.bukkit.event.Event;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.PluginManager;
 
+import com.thefaster.bukkit.Fasterstats.controller.ConfigController;
 import com.thefaster.bukkit.Fasterstats.controller.PlayerController;
 import com.thefaster.bukkit.Fasterstats.listener.PluginBlockListener;
 import com.thefaster.bukkit.Fasterstats.listener.PluginCommandListener;
@@ -22,8 +23,6 @@ import com.thefaster.bukkit.Fasterstats.model.PlayerModel;
 import com.thefaster.bukkit.Fasterstats.model.PlayerStateModel;
 import com.thefaster.bukkit.Fasterstats.model.PluginModel;
 
-import config.Config;
-
 public class Fasterstats extends JavaPlugin {
 	
 	public Logger log = Logger.getLogger("Minecraft");				
@@ -32,16 +31,23 @@ public class Fasterstats extends JavaPlugin {
 	public PluginModel model = new PluginModel();
 	public PlayerModel playerModel = null;
 	public boolean isPluginEnabled = false;	
+	public ConfigController config = null;
 	
 	public Fasterstats() {				
 	}
 	
+	@Override
+    public void onLoad() {
+        this.config = new ConfigController("config.yml", this);        
+    }
+	
 	public void onEnable(){
-		log.info("[Fasterstats] version " + Config.PLUGIN_VERSION + " enabled");
+		log.info("[Fasterstats] version " + this.config.getPluginVersion() + " enabled");
+		log.info("[Fasterstats] backend driver: " + this.config.getDriverType());
 										
 		try {
-			this.model.setDriver(Config.DATABASE_DRIVER);
-			this.model.db.init();
+			this.model.setDriver(this.config.getDriverType());
+			this.model.db.init(this);
 			this.playerModel = new PlayerModel(this.model.db);
 			this.SetListeners();
 			this.isPluginEnabled = true;
@@ -54,7 +60,7 @@ public class Fasterstats extends JavaPlugin {
 	}
  
 	public void onDisable(){
-		log.info("[Fasterstats] version " + Config.PLUGIN_VERSION + " disabled");
+		log.info("[Fasterstats] version " + this.config.getPluginVersion() + " disabled");
 		
 		if (this.isPluginEnabled) {
 			Collection<PlayerController> players = this.onlinePlayers.values();
