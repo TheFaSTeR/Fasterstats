@@ -12,8 +12,8 @@ public class PlayerModel {
 		this.driver = driverInstance;
 	}
 	
-	public PlayerStateModel getPlayerStateFromDatabase(Player player) {
-		return driver.getPlayerStateFromDatabase(player);
+	public PlayerStateModel getPlayerStateFromDatabase(String playerName) {
+		return driver.getPlayerStateFromDatabase(playerName);
 	}
 	
 	public void setPlayerOnline(Player player) {

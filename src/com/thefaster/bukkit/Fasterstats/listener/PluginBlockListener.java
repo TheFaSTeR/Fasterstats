@@ -17,7 +17,6 @@ public class PluginBlockListener extends BlockListener {
     public PluginBlockListener(Fasterstats instance) {
             plugin = instance;
     }
-    //You HAVE to have this!
 
     public void onBlockPlace(BlockPlaceEvent event){
            
@@ -26,7 +25,7 @@ public class PluginBlockListener extends BlockListener {
             Material mat = block.getType();            
             
             PlayerController controller = plugin.getOnlinePlayer(player);
-            controller.placeBlock(mat);
+            controller.getPlayerState().addPlaceBlock(mat);
 
     }
     
@@ -36,6 +35,6 @@ public class PluginBlockListener extends BlockListener {
     	Material mat = block.getType();    	    	
     	
     	PlayerController controller = plugin.getOnlinePlayer(player);
-    	controller.breakBlock(mat);
+    	controller.getPlayerState().addBreakBlock(mat);
     }
 }

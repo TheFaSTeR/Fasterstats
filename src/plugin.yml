@@ -8,4 +8,5 @@ commands:
     description: Provides access to Fasterstats commands and information.
     usage: |
            /<command>
-           Example: /<command> | Displays Player statistic           
+           Example: /<command> | Displays Player statistic
+           Example: /<command> time | Displays time played           

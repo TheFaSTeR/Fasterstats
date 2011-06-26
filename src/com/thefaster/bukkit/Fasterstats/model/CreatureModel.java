@@ -9,6 +9,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Pig;
 import org.bukkit.entity.PigZombie;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.Sheep;
 import org.bukkit.entity.Skeleton;
 import org.bukkit.entity.Slime;
@@ -31,7 +32,8 @@ public class CreatureModel {
 	public static String CREATURE_SKELETON 		= "Skeleton";
 	public static String CREATURE_SLIME			= "Slime";
 	public static String CREATURE_SPIDER		= "Spider";
-	public static String CREATURE_WOLF			= "Wolf";	     
+	public static String CREATURE_WOLF			= "Wolf";
+	public static String CREATURE_PLAYER		= "Player";
 	
 	public static String getCreatureNameByEntity(LivingEntity entity) {
 		if (entity instanceof Zombie) {
@@ -62,6 +64,8 @@ public class CreatureModel {
 			return CREATURE_SPIDER;
 		} else if (entity instanceof Wolf) {
 			return CREATURE_WOLF;
+		} else if (entity instanceof Player) {
+			return CREATURE_PLAYER;
 		} else {
 			return null;
 		}

@@ -31,12 +31,14 @@ public class MySQLDriver implements PluginDriver {
 			String query = null;			
 			
 			PreparedStatement statement = connect.prepareStatement(
-					"UPDATE playerstats SET deaths = ?, move_range = ?, time_played = ? WHERE player_id = ?"
+					"UPDATE playerstats SET deaths = ?, move_range = ?, time_played = ?, damage_done = ?, damage_get = ? WHERE player_id = ?"
 			);
 			statement.setInt(1, ps.deaths);			
 			statement.setDouble(2, ps.moveRange);
-			statement.setInt(3, ps.timePlayed);
-			statement.setInt(4, ps.playerId);
+			statement.setLong(3, ps.timePlayed);
+			statement.setLong(4, ps.damageDone);
+			statement.setLong(5, ps.damageGet);
+			statement.setInt(6, ps.playerId);
 			statement.executeUpdate();															
 			
 			Iterator<Material> iterPlace = ps.blockPlace.keySet().iterator();
@@ -152,18 +154,66 @@ public class MySQLDriver implements PluginDriver {
 		
 	}
 	
-	public PlayerStateModel getPlayerStateFromDatabase(Player player) {
-		PlayerStateModel state = new PlayerStateModel(player);
+	public PlayerStateModel getPlayerStateFromDatabase(String playerName) {
+		PlayerStateModel state = null;
+		PreparedStatement stmt = null;		
 		
 		try {
-			String query = String.format("SELECT * FROM player WHERE name = '%s'", player.getName());
-			ResultSet result = connect.createStatement().executeQuery(query);
+			state = this.collectPlayerStateFromDatabase(playerName);
+			if (state == null) {
+				state = new PlayerStateModel(playerName);
+				
+				String query = "INSERT INTO player SET name = ?";
+				stmt = connect.prepareStatement(query);
+				stmt.setString(1, state.name);
+				stmt.executeUpdate();																	
+				
+				query = "SELECT player_id FROM player WHERE name = ?";
+				stmt = connect.prepareStatement(query);
+				stmt.setString(1, state.name);
+				ResultSet result = stmt.executeQuery();
+				
+				Integer playerId = 0;
+				if (result.next()) {
+					playerId = result.getInt("player_id");
+				}				
+				
+				if (playerId != 0) {
+					query = String.format("INSERT INTO playerstats SET player_id = '%d'", playerId);
+					connect.createStatement().executeUpdate(query);
+				} else {
+					throw new SQLException("Can't create new player in database.");
+				}
+				
+				
+				state.playerId = playerId;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}								
+		
+		return state;
+	}
+	
+	public PlayerStateModel requestPlayerStateFromDatabase(String playerName) {
+		return collectPlayerStateFromDatabase(playerName);
+	}
+	
+	private PlayerStateModel collectPlayerStateFromDatabase(String playerName) {
+		PreparedStatement stmt = null;
+		ResultSet result = null;
+		PlayerStateModel state = null;
+		
+		try {
+			String query = "SELECT * FROM player WHERE name = ?";
+			stmt = connect.prepareStatement(query);
+			stmt.setString(1, playerName);
+			result = stmt.executeQuery();						
 			
 			if (result.next()) {
-				this.PrintDebugMessage(player.getName() + " founded in database. Getting state.");	
-				
+				state = new PlayerStateModel(playerName);
 				state.playerId = result.getInt("player_id");
-				state.lastLogin = result.getDate("last_login");								
+				state.lastLogin = result.getTimestamp("last_login");								
 				
 				query = String.format("SELECT * FROM playerstats WHERE player_id = '%d'", state.playerId);
 				result = connect.createStatement().executeQuery(query);
@@ -171,7 +221,9 @@ public class MySQLDriver implements PluginDriver {
 				if (result.next()) {
 					state.deaths = result.getInt("deaths");					
 					state.moveRange = result.getDouble("move_range");
-					state.timePlayed = result.getInt("time_played");
+					state.timePlayed = result.getLong("time_played");
+					state.damageDone = result.getLong("damage_done");
+					state.damageGet = result.getLong("damage_get");
 				} else {
 					query = String.format("INSERT INTO playerstats SET player_id = '%d'", state.playerId);
 					connect.createStatement().executeUpdate(query);
@@ -211,34 +263,12 @@ public class MySQLDriver implements PluginDriver {
 						
 						state.setPlayerKill(creature, count);
 					}
-				}
-			} else {
-				this.PrintDebugMessage(player.getName() + " not founded in database. Creating new record.");
-				
-				query = String.format("INSERT INTO player SET name = '%s'", player.getName());
-				connect.createStatement().executeUpdate(query); 
-				
-				query = String.format("SELECT player_id FROM player WHERE name = '%s'", player.getName());
-				result = connect.createStatement().executeQuery(query);
-				
-				Integer playerId = 0;
-				if (result.next()) {
-					playerId = result.getInt("player_id");
-				}				
-				
-				if (playerId != 0) {
-					query = String.format("INSERT INTO playerstats SET player_id = '%d'", playerId);
-					connect.createStatement().executeUpdate(query);
-				} else {
-					throw new SQLException("Can't create new player in database.");
-				}
-				
-				
-				state.playerId = playerId;
-			}
+				}								
+			} 							
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
-		}								
+		}
 		
 		return state;
 	}
@@ -268,9 +298,5 @@ public class MySQLDriver implements PluginDriver {
 			e.printStackTrace();
 		}
 	}		
-	
-	private void PrintDebugMessage(String value) {
-		System.out.println("[Fasterstats] db message: " + value);
-	}
 
 }

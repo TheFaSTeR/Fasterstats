@@ -1,7 +1,6 @@
 package com.thefaster.bukkit.Fasterstats.controller;
 
 import org.bukkit.entity.Player;
-import org.bukkit.Material;
 
 import com.thefaster.bukkit.Fasterstats.Fasterstats;
 import com.thefaster.bukkit.Fasterstats.model.PlayerStateModel;
@@ -18,36 +17,19 @@ public class PlayerController {
 		this.core = core;				
 	}
 	
-	public void placeBlock(Material mat) {
-		this.playerState.addPlaceBlock(mat);				
-	}
-	
-	public void breakBlock(Material mat) {
-		this.playerState.addBreakBlock(mat);				
-	}
-	
-	public void playerJoin() {
-		System.out.println("[Fasterstats] " + player.getName() + " join. Getting player state.");
-		this.playerState = this.core.playerModel.getPlayerStateFromDatabase(this.player);	
+	public void playerJoin() {		
+		this.playerState = this.core.playerModel.getPlayerStateFromDatabase(this.player.getName());	
 		this.core.playerModel.setPlayerOnline(player);
+		this.playerState.startTime();
 	}
 	
-	public void playerQuit() {
-		System.out.println("[Fasterstats] " + player.getName() + " quit. Saving player state.");
+	public void playerQuit() {		
+		this.playerState.endTime();
 		this.core.playerModel.Save(this.playerState);
-		this.core.playerModel.setPlayerOffline(player);
+		this.core.playerModel.setPlayerOffline(player);		
 	}		
 	
-	public void moveRange(double distance) {
-		this.playerState.addMoveRange(distance);
-	}
-	
-	public void playerDeath() {
-		this.playerState.addPlayerDeath();
-	}
-	
-	public void playerKill(String entity) {
-		this.playerState.addPlayerKill(entity);
-	}
-
+	public PlayerStateModel getPlayerState() {
+		return this.playerState;
+	}		
 }

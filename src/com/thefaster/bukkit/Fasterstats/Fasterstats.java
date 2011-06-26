@@ -19,6 +19,7 @@ import com.thefaster.bukkit.Fasterstats.listener.PluginCommandListener;
 import com.thefaster.bukkit.Fasterstats.listener.PluginEntityListener;
 import com.thefaster.bukkit.Fasterstats.listener.PluginPlayerListener;
 import com.thefaster.bukkit.Fasterstats.model.PlayerModel;
+import com.thefaster.bukkit.Fasterstats.model.PlayerStateModel;
 import com.thefaster.bukkit.Fasterstats.model.PluginModel;
 
 import config.Config;
@@ -70,7 +71,7 @@ public class Fasterstats extends JavaPlugin {
 		
 		PluginBlockListener blockListener = new PluginBlockListener(this);
 		pm.registerEvent(Event.Type.BLOCK_PLACE, blockListener, Event.Priority.Monitor, this);
-		pm.registerEvent(Event.Type.BLOCK_BREAK, blockListener, Event.Priority.Monitor, this);
+		pm.registerEvent(Event.Type.BLOCK_BREAK, blockListener, Event.Priority.Monitor, this);		
 		
 		PluginPlayerListener playerListener = new PluginPlayerListener(this);
 		pm.registerEvent(Event.Type.PLAYER_JOIN, playerListener, Event.Priority.Monitor, this);
@@ -79,6 +80,7 @@ public class Fasterstats extends JavaPlugin {
 				
 		PluginEntityListener entityListener = new PluginEntityListener(this);
 		pm.registerEvent(Event.Type.ENTITY_DEATH, entityListener, Event.Priority.Monitor, this); 		
+		pm.registerEvent(Event.Type.ENTITY_DAMAGE, entityListener, Event.Priority.Monitor, this);
 	}
 	
 	public PlayerController getOnlinePlayer(Player player) {
@@ -87,6 +89,19 @@ public class Fasterstats extends JavaPlugin {
     	}
 		
 		return this.onlinePlayers.get(player);
+	}
+	
+	public PlayerStateModel requestPlayerStateByName(String playerName) {
+		Iterator<Player> iterPlayer = this.onlinePlayers.keySet().iterator();
+		while (iterPlayer.hasNext()) {
+			Player player = iterPlayer.next();
+			if (player.getName().equals(playerName)) {
+				PlayerController controller = this.getOnlinePlayer(player);
+				return controller.getPlayerState();
+			}
+		}
+		
+		return this.model.db.getPlayerStateFromDatabase(playerName);
 	}
 	
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {		

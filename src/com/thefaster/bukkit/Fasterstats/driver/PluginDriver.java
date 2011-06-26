@@ -9,7 +9,7 @@ public interface PluginDriver {
 	void save(PlayerStateModel ps);
 	void init() throws Exception;	
 	
-	PlayerStateModel getPlayerStateFromDatabase(Player player);
+	PlayerStateModel getPlayerStateFromDatabase(String playerName);
 	void setPlayerOnline(Player player);
 	void setPlayerOffline(Player player);	
 	

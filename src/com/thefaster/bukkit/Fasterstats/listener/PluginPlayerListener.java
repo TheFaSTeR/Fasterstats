@@ -20,8 +20,7 @@ public class PluginPlayerListener extends PlayerListener {
     }
     
     public void onPlayerJoin(PlayerJoinEvent event) {
-    	Player player = event.getPlayer();    	
-    	System.out.println("[Fasterstats] player " + player.getName() + " has joined.");
+    	Player player = event.getPlayer();    	    	
     	
     	PlayerController controller = core.getOnlinePlayer(player);
     	controller.playerJoin();
@@ -39,8 +38,8 @@ public class PluginPlayerListener extends PlayerListener {
     	Location from = event.getFrom();
     	Location to = event.getTo();
     	
-    	PlayerController controller = core.getOnlinePlayer(player);
-    	controller.moveRange(from.distance(to));    	    	    	
+    	PlayerController controller = core.getOnlinePlayer(player);    	
+    	controller.getPlayerState().addMoveRange(from.distance(to));    	    	    	
     }
         
 }
