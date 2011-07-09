@@ -1,7 +1,11 @@
 package com.thefaster.bukkit.Fasterstats.controller;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.util.logging.Logger;
 
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.util.config.Configuration;
@@ -52,6 +56,39 @@ public class ConfigController {
 			this.config = new Configuration(configFile);
 			this.config.load();
 		}
+	}
+	
+	public String getDatabaseSqlContent() {
+		File databaseFile = new File("plugins/fasterstats/" + this.getDriverType() + "/dump.sql");
+		if (!databaseFile.exists()) {
+			Logger.getLogger("Minecraft").warning("File 'plugins/fasterstats/" + this.getDriverType() + "/dump.sql' not found.");
+			return null;
+		}
+		
+		String result = "";
+		BufferedReader reader = null;
+		
+		try {
+			reader = new BufferedReader(new FileReader(databaseFile));
+			String text = null;
+			while ((text = reader.readLine()) != null) {
+				result += text + System.getProperty("line.separator");
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (reader != null) {
+					reader.close();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return result;
 	}
 	
 	public String getDriverType() {

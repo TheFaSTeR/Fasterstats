@@ -39,7 +39,7 @@ public class Fasterstats extends JavaPlugin {
 	@Override
     public void onLoad() {
         this.config = new ConfigController("config.yml", this);        
-    }
+    }	
 	
 	public void onEnable(){
 		log.info("[Fasterstats] version " + this.config.getPluginVersion() + " enabled");
@@ -73,11 +73,11 @@ public class Fasterstats extends JavaPlugin {
 	}
 	
 	public void SetListeners() {
-		PluginManager pm = this.getServer().getPluginManager();					
+		PluginManager pm = this.getServer().getPluginManager();				
 		
 		PluginBlockListener blockListener = new PluginBlockListener(this);
 		pm.registerEvent(Event.Type.BLOCK_PLACE, blockListener, Event.Priority.Monitor, this);
-		pm.registerEvent(Event.Type.BLOCK_BREAK, blockListener, Event.Priority.Monitor, this);		
+		pm.registerEvent(Event.Type.BLOCK_BREAK, blockListener, Event.Priority.Monitor, this);				
 		
 		PluginPlayerListener playerListener = new PluginPlayerListener(this);
 		pm.registerEvent(Event.Type.PLAYER_JOIN, playerListener, Event.Priority.Monitor, this);

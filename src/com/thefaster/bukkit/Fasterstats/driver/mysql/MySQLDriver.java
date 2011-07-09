@@ -23,6 +23,8 @@ public class MySQLDriver implements PluginDriver {
 	private Connection connect = null;
 	private Fasterstats core = null;
 	
+	private static Integer DB_VERSION = 1;
+	
 	static final ClassLoader loader = MySQLDriver.class.getClassLoader();
 
 	@Override
@@ -124,9 +126,16 @@ public class MySQLDriver implements PluginDriver {
 					this.core.config.getDriverUser(),
 					this.core.config.getDriverPassword()					
 					));
-		
+								
 			if (!this.isDatabaseExist()) {
+				this.core.log.info("[Fasterstats] database not found. Trying to create.");
 				this.createNewDatabase();
+				this.core.log.info("[Fasterstats] database dump successfully loaded.");
+			} else {
+				System.out.println("[Fasterstats] checking database version...");
+				if (!this.isUpToDateDatabase()) {
+					this.updateDatabase();
+				}
 			}
 						
 			
@@ -135,15 +144,40 @@ public class MySQLDriver implements PluginDriver {
 		}
 	}
 	
+	private void updateDatabase() {
+		System.out.println("[Fasterstats] update database. please wait...");
+	}
+	
+	private boolean isUpToDateDatabase() {
+		try {
+			ResultSet result = connect.createStatement().executeQuery("SELECT db_version FROM db_version");
+			if (result.next()) {
+				if (MySQLDriver.DB_VERSION == result.getInt("db_version")) {
+					System.out.println("[Fasterstats] database version OK!");
+					return true;
+				}			
+			}			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
 	private boolean isDatabaseExist() throws SQLException {
 		Statement statement = connect.createStatement();
 		boolean founded = false;
 		
 		ResultSet resultSet = statement.executeQuery("SHOW DATABASES");
 		while (resultSet.next()) {
-			if (resultSet.getString("Database").equals(this.core.config.getDriverDatabaseName())) {
-				founded = true;
+			if (resultSet.getString("Database").equals(this.core.config.getDriverDatabaseName())) {				
 				System.out.println("[Fasterstats] Database founded!");
+				ResultSet result = statement.executeQuery("SHOW TABLES FROM " + this.core.config.getDriverDatabaseName());
+				if (result.next()) {
+					founded = true;
+				} else {
+					System.out.println("[Fasterstats] Database is empty.");
+					founded = false;
+				}
 				break;
 			}
 		}
@@ -151,8 +185,18 @@ public class MySQLDriver implements PluginDriver {
 		return founded;
 	}
 	
-	private void createNewDatabase() {
+	private void createNewDatabase() throws Exception {
+		String dump = this.core.config.getDatabaseSqlContent();
+		if (dump == null) {
+			throw new Exception("[Fasterstats] can't load dump.sql");
+		}
 		
+		String query[] = dump.split(";");
+		
+		for (int i = 0; i < query.length - 1; i ++) {	
+			System.out.println(query[i]);
+			connect.createStatement().execute(query[i] + ";");
+		}								
 	}
 	
 	public PlayerStateModel getPlayerStateFromDatabase(String playerName) {
